@@ -43,7 +43,7 @@ thoatInput:
 	jal timTichMax	# Gọi hàm tìm tích lớn nhất
 	
 	la $a0, kq
-	move $a1,$v0 	# Lưu Max vào a0
+	move $a1,$v0 	# Lưu Max vào a1
 	li $v0, 56	# in ra màn hình
 	
 	syscall
@@ -63,8 +63,8 @@ timTichMax:
 	li $t0,0		# Chỉ số i=0
 	lw $t1, 0($s0)		# t1 = A[i]
 	li $v0, -2147483648	# Khởi tạo $v0 lưu Max
-	
-loop:	beq $t0, $s1, end_loop	# Nếu i==length, kết thúc vòng lặp
+	addi $s1,$s1,-1
+loop:	beq $t0, $s1, end_loop	# Nếu i==length-1, kết thúc vòng lặp
 	addi $t2, $t0, 1	# t2 = i+1
 	
 	sll $t2, $t2, 2		# t2 = (i+1)*4
