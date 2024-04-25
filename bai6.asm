@@ -1,42 +1,44 @@
 .data
-	Array: 	.space 100
-	length: .asciiz "Nhap kich thuoc mang:"
-	element: .asciiz "Nhap lan luot phan tu cua mang:"
-	err: .asciiz " Co loi, xin nhap lai"
-	kq: .asciiz "Output: "
+	Array: 	.space 100	#Cấp phát 100 byte cho mảng
+	length: .asciiz "Nhap kich thuoc mang:"		#Thông báo nhập kích thước mảng
+	element: .asciiz "Nhap lan luot phan tu cua mang:"	#Thông báo nhập phần tử mảng
+	err: .asciiz " Co loi, xin nhap lai"		#Thông báo lỗi
+	kq: .asciiz "Output: "				#Thông báo kết quả
 .text
 .globl main
 
 main:	
-	la $s0, Array
-	#Doc kich thuoc mang
-	li $v0, 51
+	la $s0, Array		# Lưu mảng vào s0
+
+	#Đọc kích thước mảng
+	li $v0, 51		# InputDialogInt
 	la $a0, length
 	syscall
 	
-	beq $a1, -2, exit
-	blez $a0, error
+	beq $a1, -2, exit	#Nếu người dùng nhấn cancel thì thoát chương trình
+	blez $a0, error		#Nếu kích thước mảng <= 0 thì báo lỗi và yêu cầu nhập lại
+	bnez $a1, error		#Nếu nhập sai kiểu dữ liệu hoặc rỗng thì yêu cầu nhập lại
 	
-	move $s1, $a0
+	move $s1, $a0		#Lưu kích thước mảng vào s1
 	
-	# Nhap phan tu cua mang
-	li $t0, 0
+	# Đọc phần tử của mảng
+	li $t0, 0		#Tạo chỉ số i=0
 loopInput:
-	bge $t0, $s1, thoatInput
-	li $v0, 51
+	bge $t0, $s1, thoatInput	# Khi i == length thì ngừng đọc Input
+	li $v0, 51			# InputDialogInt
 	la $a0, element
 	syscall
 	
-	beq $a1, -2, exit
-	blez $a0, error
+	beq $a1, -2, exit		# Nếu người dùng nhấn cancel thì thoát chương trình
+	bnez $a1, error		#Nếu nhập sai kiểu dữ liệu hoặc rỗng thì yêu cầu nhập lại
 	
-	sw $a0,0($s0)
-	addi $s0, $s0, 4
-	addi $t0, $t0, 1
-	j loopInput 
+	sw $a0,0($s0)			# Lưu A[i] = a0
+	addi $s0, $s0, 4		# Tăng s0 thêm 4 bit, để lưu phần tử tiếp theo
+	addi $t0, $t0, 1		# i = i+1
+	j loopInput 			# Đọc phần tử tiếp theo
 	
 thoatInput:
-	la $s0, Array
+	la $s0, Array			# Lưu s0 bằng địa chỉ A[0]
 
 	jal timTichMax	# Gọi hàm tìm tích lớn nhất
 	
